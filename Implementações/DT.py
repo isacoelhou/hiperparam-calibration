@@ -114,6 +114,8 @@ def dt_cross_validation():
   #print("Melhor desempenho: ",Classificador.best_score_)
 
   #print("\nDesempenho sobre o teste")
+  opiniao = DT.predict(x_validacao)
+
   DT = tree.DecisionTreeClassifier(criterion=Classificador.best_params_['criterion'], splitter=Classificador.best_params_['splitter'], max_depth=Classificador.best_params_['max_depth'], min_samples_split=Classificador.best_params_['min_samples_split'], min_samples_leaf=Classificador.best_params_['min_samples_leaf'])
   DT.fit(x_treino, y_treino)
   opiniao = DT.predict(x_teste)
@@ -170,8 +172,8 @@ def dt_dummy_optimization():
     #print("\nDesempenho sobre o teste")
     DT = tree.DecisionTreeClassifier(criterion=Resultado_rs.x[0], splitter=Resultado_rs.x[1], max_depth=Resultado_rs.x[2], min_samples_leaf=Resultado_rs.x[3])
     DT.fit(x_treino, y_treino)
-    opiniao = DT.predict(x_validacao)
-    Acc = accuracy_score(y_validacao, opiniao)
+    opiniao = DT.predict(x_teste)
+    Acc = accuracy_score(y_teste, opiniao)
     return Acc
     #print("Acurácia: ", Acc)
     #print("\n=========================================================================\n")
@@ -188,8 +190,8 @@ def dt_bayesian_optimization():
     #print("\nDesempenho sobre o teste")
     DT = tree.DecisionTreeClassifier(criterion=Resultado_go.x[0], splitter=Resultado_go.x[1], max_depth=Resultado_go.x[2], min_samples_leaf=Resultado_go.x[3])
     DT.fit(x_treino, y_treino)
-    opiniao = DT.predict(x_validacao)
-    Acc = accuracy_score(y_validacao, opiniao)
+    opiniao = DT.predict(x_teste)
+    Acc = accuracy_score(y_teste, opiniao)
     return Acc
     #print("Acurácia: ", Acc)
 
@@ -277,18 +279,22 @@ for _ in range(10):
     sh_tempo.append(tempo_total)
     ##print(f"Tempo de execução no dt sucessive halving: {tempo_total} segundos")
 
-print("Média de tempo no grid search: ",media_valores(gs_tempo))
-print("Média de tempo no random search: ", media_valores(rs_tempo))
-print("Média de tempo no dummy opt " ,media_valores(do_tempo))
-print("Média de tempo no bayesian opt: " , media_valores(bo_tempo))
-print("Média de tempo no sucessive halving: " , media_valores(sh_tempo))
-print("Média de tempo no cross validation: " , media_valores(cv_tempo))
+with open('./stats/DTstats.txt', 'w') as arquivo:
 
-print(gs_acc)
+  arquivo.write("\nTempo:\n")
+  
+  arquivo.write("Média de tempo no grid search: ",media_valores(gs_tempo))
+  arquivo.write("Média de tempo no random search: ", media_valores(rs_tempo))
+  arquivo.write("Média de tempo no dummy opt " ,media_valores(do_tempo))
+  arquivo.write("Média de tempo no bayesian opt: " , media_valores(bo_tempo))
+  arquivo.write("Média de tempo no sucessive halving: " , media_valores(sh_tempo))
+  arquivo.write("Média de tempo no cross validation: " , media_valores(cv_tempo))
 
-print("Média de acc no grid search: ",media_valores(gs_acc))
-print("Média de acc no random search: ", media_valores(rs_acc))
-print("Média de acc no dummy opt " ,media_valores(do_acc))
-print("Média de acc no bayesian opt: " , media_valores(bo_acc))
-print("Média de acc no sucessive halving: " , media_valores(sh_acc))
-print("Média de acc no cross validation: " , media_valores(cv_acc))
+  arquivo.write("\nAcc:\n")
+
+  arquivo.write("Média de acc no grid search: ",media_valores(gs_acc))
+  arquivo.write("Média de acc no random search: ", media_valores(rs_acc))
+  arquivo.write("Média de acc no dummy opt " ,media_valores(do_acc))
+  arquivo.write("Média de acc no bayesian opt: " , media_valores(bo_acc))
+  arquivo.write("Média de acc no sucessive halving: " , media_valores(sh_acc))
+  arquivo.write("Média de acc no cross validation: " , media_valores(cv_acc))
