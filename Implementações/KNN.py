@@ -9,6 +9,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV
 
 from skopt import dummy_minimize
@@ -201,7 +202,7 @@ def media_valores(lista):
     return (sum(lista)/len(lista))
 
 
-dados = pd.read_csv("Diabetes.csv")
+dados = pd.read_csv("../datasets/Diabetes.csv")
 dados.head()
 
 df_dados = pd.DataFrame(dados)
