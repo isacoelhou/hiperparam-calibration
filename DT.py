@@ -7,6 +7,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import GridSearchCV
 
 from sklearn import tree
+from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import HalvingGridSearchCV
 
 from skopt import dummy_minimize
@@ -47,6 +48,8 @@ def dt_grid_search():
   opiniao = DT.predict(x_teste)
 
   Acc = accuracy_score(y_teste, opiniao)
+
+  return Acc
   #print("Acurácia: ",Acc)
   #print("\n=========================================================================\n")
 
@@ -85,6 +88,8 @@ def dt_random_search():
   opiniao = DT.predict(x_teste)
 
   Acc = accuracy_score(y_teste, opiniao)
+
+  return Acc
   #print("Acurácia: ",Acc)
   #print("\n=========================================================================\n")
 
@@ -113,12 +118,13 @@ def dt_cross_validation():
   DT.fit(x_treino, y_treino)
   opiniao = DT.predict(x_teste)
   Acc = accuracy_score(y_teste, opiniao)
+  return Acc
   #print("Acurácia: ", Acc)
   #print("\n=========================================================================\n")
 
 
 def dt_sucessive_halving():
-  parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'),'max_depth':[3,4,5,7,10],'min_samples_leaf':[1,3,5]}
+  parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'),'min_samples_split':[3,7], 'max_depth':[3,4,5,7,10],'min_samples_leaf':[1,3,5]}
   DT = tree.DecisionTreeClassifier()
   Classificador = HalvingGridSearchCV(DT, parametros,cv=5)
 
@@ -134,6 +140,7 @@ def dt_sucessive_halving():
   DT.fit(x_treino, y_treino)
   opiniao = DT.predict(x_teste)
   Acc = accuracy_score(y_teste, opiniao)
+  return Acc
   #print("Acurácia: ", Acc)
   #print("\n=========================================================================\n")
 
@@ -152,7 +159,7 @@ def treinar_modelo_dt(params):
     return 1 - accuracy_score(y_validacao, opiniao)
 
 def dt_dummy_optimization():
-    parametros = [('gini', 'entropy'), ('best', 'random'), (3, 4, 5, 7, 10), (1, 3, 5)]
+    parametros = [('gini', 'entropy'), ('best', 'random'), (3,7), (3, 4, 5, 7, 10), (1, 3, 5)]
 
     #print("Avaliação Teste usando Dummy")
     Resultado_rs = dummy_minimize(treinar_modelo_dt, parametros, verbose=0, n_calls=30)
@@ -165,6 +172,7 @@ def dt_dummy_optimization():
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_validacao)
     Acc = accuracy_score(y_validacao, opiniao)
+    return Acc
     #print("Acurácia: ", Acc)
     #print("\n=========================================================================\n")
 
@@ -182,6 +190,7 @@ def dt_bayesian_optimization():
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_validacao)
     Acc = accuracy_score(y_validacao, opiniao)
+    return Acc
     #print("Acurácia: ", Acc)
 
 
@@ -196,7 +205,7 @@ def media_valores(lista):
     return (sum(lista)/len(lista))
 
 
-dados = pd.read_csv("Diabetes.csv")
+dados = pd.read_csv("./datasets/Diabetes.csv")
 dados.head()
 
 df_dados = pd.DataFrame(dados)
@@ -221,7 +230,7 @@ sh_acc = []
 bo_acc = []
 do_acc = []
 
-for i in range(10):
+for _ in range(10):
 
     x_treino,x_temp,y_treino,y_temp = train_test_split(df_dados,dados["Class"],test_size=0.5,stratify=dados["Class"])
     x_validacao,x_teste,y_validacao,y_teste= train_test_split(x_temp,y_temp,test_size=0.5, stratify = y_temp)
@@ -274,6 +283,8 @@ print("Média de tempo no dummy opt " ,media_valores(do_tempo))
 print("Média de tempo no bayesian opt: " , media_valores(bo_tempo))
 print("Média de tempo no sucessive halving: " , media_valores(sh_tempo))
 print("Média de tempo no cross validation: " , media_valores(cv_tempo))
+
+print(gs_acc)
 
 print("Média de acc no grid search: ",media_valores(gs_acc))
 print("Média de acc no random search: ", media_valores(rs_acc))
