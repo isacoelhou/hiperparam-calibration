@@ -280,21 +280,21 @@ for _ in range(10):
     ##print(f"Tempo de execução no dt sucessive halving: {tempo_total} segundos")
 
 with open('./stats/DTstats.txt', 'w') as arquivo:
-
-  arquivo.write("\nTempo:\n")
   
-  arquivo.write("Média de tempo no grid search: ",media_valores(gs_tempo))
-  arquivo.write("Média de tempo no random search: ", media_valores(rs_tempo))
-  arquivo.write("Média de tempo no dummy opt " ,media_valores(do_tempo))
-  arquivo.write("Média de tempo no bayesian opt: " , media_valores(bo_tempo))
-  arquivo.write("Média de tempo no sucessive halving: " , media_valores(sh_tempo))
-  arquivo.write("Média de tempo no cross validation: " , media_valores(cv_tempo))
+  arquivo.write("\nTempo:\n")
 
-  arquivo.write("\nAcc:\n")
+  arquivo.write(f"Média de tempo no grid search: {media_valores(gs_tempo)}\n")
+  arquivo.write(f"Média de tempo no random search: {media_valores(rs_tempo)}\n")
+  arquivo.write(f"Média de tempo no dummy opt: {media_valores(do_tempo)}\n")
+  arquivo.write(f"Média de tempo no bayesian opt: {media_valores(bo_tempo)}\n")
+  arquivo.write(f"Média de tempo no sucessive halving: {media_valores(sh_tempo)}\n")
+  arquivo.write(f"Média de tempo no cross validation: {media_valores(cv_tempo)}\n")
 
-  arquivo.write("Média de acc no grid search: ",media_valores(gs_acc))
-  arquivo.write("Média de acc no random search: ", media_valores(rs_acc))
-  arquivo.write("Média de acc no dummy opt " ,media_valores(do_acc))
-  arquivo.write("Média de acc no bayesian opt: " , media_valores(bo_acc))
-  arquivo.write("Média de acc no sucessive halving: " , media_valores(sh_acc))
-  arquivo.write("Média de acc no cross validation: " , media_valores(cv_acc))
+  arquivo.write("\nACC:\n")
+
+  arquivo.write(f"Média de acc no grid search: {media_valores(gs_acc)}\n")
+  arquivo.write(f"Média de acc no random search: {media_valores(rs_acc)}\n")
+  arquivo.write(f"Média de acc no dummy opt: {media_valores(do_acc)}\n")
+  arquivo.write(f"Média de acc no bayesian opt: {media_valores(bo_acc)}\n")
+  arquivo.write(f"Média de acc no sucessive halving: {media_valores(sh_acc)}\n")
+  arquivo.write(f"Média de acc no cross validation: {media_valores(cv_acc)}\n")
