@@ -202,7 +202,7 @@ def media_valores(lista):
     return (sum(lista)/len(lista))
 
 
-dados = pd.read_csv("../datasets/Diabetes.csv")
+dados = pd.read_csv("../datasets/letter-recognition.csv")
 dados.head()
 
 df_dados = pd.DataFrame(dados)
@@ -274,20 +274,18 @@ for i in range(10):
     sh_tempo.append(tempo_total)
     #print(f"Tempo de execução no rf sucessive halving: {tempo_total} segundos")
 
-with open('./stats/RFstats.txt', 'w') as arquivo:
-   
-  arquivo.write(f"Média de tempo no grid search: {media_valores(gs_tempo)}\n")
-  arquivo.write(f"Média de tempo no random search: {media_valores(rs_tempo)}\n")
-  arquivo.write(f"Média de tempo no dummy opt: {media_valores(do_tempo)}\n")
-  arquivo.write(f"Média de tempo no bayesian opt: {media_valores(bo_tempo)}\n")
-  arquivo.write(f"Média de tempo no sucessive halving: {media_valores(sh_tempo)}\n")
-  arquivo.write(f"Média de tempo no cross validation: {media_valores(cv_tempo)}\n")
-    
-  arquivo.write("\nACC:\n")
-    
-  arquivo.write(f"Média de acc no grid search: {media_valores(gs_acc)}\n")
-  arquivo.write(f"Média de acc no random search: {media_valores(rs_acc)}\n")
-  arquivo.write(f"Média de acc no dummy opt: {media_valores(do_acc)}\n")
-  arquivo.write(f"Média de acc no bayesian opt: {media_valores(bo_acc)}\n")
-  arquivo.write(f"Média de acc no sucessive halving: {media_valores(sh_acc)}\n")
-  arquivo.write(f"Média de acc no cross validation: {media_valores(cv_acc)}\n")
+import pandas as pd
+
+estrategias = ["Grid Search", "Random Search", "Dummy Opt", "Bayesian Opt", "Successive Halving", "Cross Validation"]
+tempos = [media_valores(gs_tempo), media_valores(rs_tempo), media_valores(do_tempo), media_valores(bo_tempo), media_valores(sh_tempo), media_valores(cv_tempo)]
+acuracias = [media_valores(gs_acc), media_valores(rs_acc), media_valores(do_acc), media_valores(bo_acc), media_valores(sh_acc), media_valores(cv_acc)]
+
+df = pd.DataFrame({
+    'Estrategia': estrategias,
+    'Tempo': tempos,
+    'Acc': acuracias
+})
+
+df.set_index('Estrategia', inplace=True)
+
+df.to_csv('./stats/RFstats.csv')

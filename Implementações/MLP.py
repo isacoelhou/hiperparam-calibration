@@ -27,11 +27,11 @@ from skopt import gp_minimize
 
 import time
 
-def mlp_random_search():
+def mlp_random_search(numero_colunas):
   maior = -1
 
   for n in range(50):
-    i = random.choice((5,6,10,12))
+    i = random.choice((numero_colunas,(2*numero_colunas)))
     j = random.choice(('constant','invscaling', 'adaptive'))
     k = random.choice((50,100,150,300,500,1000))
     l = random.choice(('identity', 'logistic', 'tanh', 'relu'))
@@ -48,7 +48,7 @@ def mlp_random_search():
       Melhor_j = j
       Melhor_k = k
       Melhor_l = l
-
+#numero de neuronios na camada escondidas entre 1x e 2x o numero de atributos
   #print("Avaliação da grid MLP search\n")
 
   #print("Acc do  MLP:",maior)
@@ -67,11 +67,11 @@ def mlp_random_search():
   #print("Acurácia: ", Acc)
   #print("\n=========================================================================\n")
 
-def mlp_grid_search():
+def mlp_grid_search(numero_colunas):
 
   maior = -1
 
-  for i in (5,6,10,12):
+  for i in (numero_colunas,2*numero_colunas):
     for j in ('constant','invscaling', 'adaptive'):
         for k in (50,100,150,300,500,1000):
           for l in ('identity', 'logistic', 'tanh', 'relu'):
@@ -106,8 +106,8 @@ def mlp_grid_search():
 
 
 
-def mlp_cross_validation():
-  parametros = {'hidden_layer_sizes' : [(5,5,5), (6,6,6), (10,10,10), (12,12,12)], 'learning_rate' : ('constant','invscaling', 'adaptive'), 'max_iter' : [50,100,150,300,500,1000], 'activation': ('identity', 'logistic', 'tanh', 'relu')}
+def mlp_cross_validation(numero_colunas):
+  parametros = {'hidden_layer_sizes' : [(numero_colunas,numero_colunas,numero_colunas),(2*numero_colunas,2*numero_colunas,2*numero_colunas)], 'learning_rate' : ('constant','invscaling', 'adaptive'), 'max_iter' : [50,100,150,300,500,1000], 'activation': ('identity', 'logistic', 'tanh', 'relu')}
   MLP = MLPClassifier()
 
   Classificador = GridSearchCV(estimator=MLP,param_grid=parametros,scoring='accuracy',cv=5)
@@ -117,10 +117,10 @@ def mlp_cross_validation():
   #print("Melhores parâmetros: ",Classificador.best_params_)
   #print("Melhor desempenho: ",Classificador.best_score_)
   MLP =  MLPClassifier(
-        hidden_layer_sizes=Classificador.best_params['hidden_layer_sizes'],
-        learning_rate=Classificador.best_params['learning_rate'],
-        max_iter=Classificador.best_params['max_iter'],
-        activation=Classificador.best_params['activation']
+        hidden_layer_sizes=Classificador.best_params_['hidden_layer_sizes'],
+        learning_rate=Classificador.best_params_['learning_rate'],
+        max_iter=Classificador.best_params_['max_iter'],
+        activation=Classificador.best_params_['activation']
     )
 
   MLP.fit(x_treino,y_treino)
@@ -129,9 +129,9 @@ def mlp_cross_validation():
 
   return Acc  
 
-def mlp_sucessive_halving():
+def mlp_sucessive_halving(numero_colunas):
     parametros = {
-        'hidden_layer_sizes': [(5, 5, 5), (6, 6, 6), (10, 10, 10), (12, 12, 12)],
+        'hidden_layer_sizes': [(numero_colunas, numero_colunas, numero_colunas), (2*numero_colunas, 2*numero_colunas, 2*numero_colunas)],
         'learning_rate': ['constant', 'invscaling', 'adaptive'],
         'max_iter': [50, 100, 150, 300, 500, 1000],
         'activation': ['identity', 'logistic', 'tanh', 'relu']
@@ -179,8 +179,8 @@ def treinar_modelo_mlp(params):
     opiniao = MLP.predict(x_validacao)
     return 1 - accuracy_score(y_validacao, opiniao)
 
-def mlp_dummy_optimization():
-    parametros = [([(5, 5, 5), (6, 6, 6), (10, 10, 10), (12, 12, 12)]), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
+def mlp_dummy_optimization(numero_colunas):
+    parametros = [([(numero_colunas, numero_colunas, numero_colunas), (2*numero_colunas, 2*numero_colunas, 2*numero_colunas)]), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
 
     #print("Avaliação Teste usando Dummy")
     Resultado_rs = dummy_minimize(treinar_modelo_mlp, parametros, verbose=0, n_calls=30)
@@ -197,9 +197,9 @@ def mlp_dummy_optimization():
     #print("Acurácia: ", Acc)
     #print("\n=========================================================================\n")
 
-def mlp_bayesian_optimization():
+def mlp_bayesian_optimization(numero_colunas):
     #parametros = [([(5, 5, 5), (6, 6, 6), (10, 10, 10), (12, 12, 12)]), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
-    parametros = [(5,10,15), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
+    parametros = [(numero_colunas,2*numero_colunas), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
 
     #print("Avaliação da Otimização Bayesiana")
     Resultado_go = gp_minimize(treinar_modelo_mlp, parametros, verbose=0, n_calls=30, n_random_starts=10)
@@ -228,7 +228,7 @@ def media_valores(lista):
     return (sum(lista)/len(lista))
 
 
-dados = pd.read_csv("../datasets/Diabetes.csv")
+dados = pd.read_csv("../datasets/letter-recognition.csv")
 dados.head()
 
 df_dados = pd.DataFrame(dados)
@@ -238,6 +238,8 @@ df_dados.info()
 
 Vetor_X = df_dados
 Vetor_Y = dados["Class"]
+
+numero_colunas = df_dados.shape[1]
 
 gs_tempo = []
 rs_tempo = []
@@ -259,63 +261,59 @@ for i in range(10):
     x_validacao,x_teste,y_validacao,y_teste= train_test_split(x_temp,y_temp,test_size=0.5, stratify = y_temp)
 
     inicio = time.time()
-    gs_acc.append(mlp_grid_search())
+    gs_acc.append(mlp_grid_search(numero_colunas))
     fim = time.time()
     tempo_total = fim - inicio
     gs_tempo.append(tempo_total)
     #print(f"Tempo de execução no mlp grid search: {tempo_total} segundos")
 
     inicio = time.time()
-    rs_acc.append(mlp_random_search())
+    rs_acc.append(mlp_random_search(numero_colunas))
     fim = time.time()
     tempo_total = fim - inicio
     rs_tempo.append(tempo_total)
     #print(f"Tempo de execução no mlp random search: {tempo_total} segundos")
 
     inicio = time.time()
-    do_acc.append(mlp_dummy_optimization())
+    do_acc.append(mlp_dummy_optimization(numero_colunas))
     fim = time.time()
     tempo_total = fim - inicio
     do_tempo.append(tempo_total)
     #print(f"Tempo de execução no mlp dummy opt: {tempo_total} segundos")
 
     inicio = time.time()
-    bo_acc.append(mlp_bayesian_optimization())
+    bo_acc.append(mlp_bayesian_optimization(numero_colunas))
     fim = time.time()
     tempo_total = fim - inicio
     bo_tempo.append(tempo_total)
     #print(f"Tempo de execução no mlp bayesian opt: {tempo_total} segundos")
 
     inicio = time.time()
-    cv_acc.append(mlp_cross_validation())
+    cv_acc.append(mlp_cross_validation(numero_colunas))
     fim = time.time()
     tempo_total = fim - inicio
     cv_tempo.append(tempo_total)
     #print(f"Tempo de execução no mlp cross validation: {tempo_total} segundos")
 
     inicio = time.time()
-    sh_acc.append(mlp_sucessive_halving())
+    sh_acc.append(mlp_sucessive_halving(numero_colunas))
     fim = time.time()
     tempo_total = fim - inicio
     sh_tempo.append(tempo_total)
     #print(f"Tempo de execução no mlp sucessive halving: {tempo_total} segundos")
 
-with open('./stats/MLPstats.txt', 'w') as arquivo:
-  
-  arquivo.write("\nTempo:\n")
+import pandas as pd
 
-  arquivo.write(f"Média de tempo no grid search: {media_valores(gs_tempo)}\n")
-  arquivo.write(f"Média de tempo no random search: {media_valores(rs_tempo)}\n")
-  arquivo.write(f"Média de tempo no dummy opt: {media_valores(do_tempo)}\n")
-  arquivo.write(f"Média de tempo no bayesian opt: {media_valores(bo_tempo)}\n")
-  arquivo.write(f"Média de tempo no sucessive halving: {media_valores(sh_tempo)}\n")
-  arquivo.write(f"Média de tempo no cross validation: {media_valores(cv_tempo)}\n")
+estrategias = ["Grid Search", "Random Search", "Dummy Opt", "Bayesian Opt", "Successive Halving", "Cross Validation"]
+tempos = [media_valores(gs_tempo), media_valores(rs_tempo), media_valores(do_tempo), media_valores(bo_tempo), media_valores(sh_tempo), media_valores(cv_tempo)]
+acuracias = [media_valores(gs_acc), media_valores(rs_acc), media_valores(do_acc), media_valores(bo_acc), media_valores(sh_acc), media_valores(cv_acc)]
 
-  arquivo.write("\nACC:\n")
+df = pd.DataFrame({
+    'Estrategia': estrategias,
+    'Tempo': tempos,
+    'Acc': acuracias
+})
 
-  arquivo.write(f"Média de acc no grid search: {media_valores(gs_acc)}\n")
-  arquivo.write(f"Média de acc no random search: {media_valores(rs_acc)}\n")
-  arquivo.write(f"Média de acc no dummy opt: {media_valores(do_acc)}\n")
-  arquivo.write(f"Média de acc no bayesian opt: {media_valores(bo_acc)}\n")
-  arquivo.write(f"Média de acc no sucessive halving: {media_valores(sh_acc)}\n")
-  arquivo.write(f"Média de acc no cross validation: {media_valores(cv_acc)}\n")
+df.set_index('Estrategia', inplace=True)
+
+df.to_csv('./stats/MLPstats.csv')

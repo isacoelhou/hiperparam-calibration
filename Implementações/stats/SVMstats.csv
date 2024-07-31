@@ -1,0 +1,7 @@
+Estrategia,Tempo,Acc
+Grid Search,2.0,2.0
+Random Search,2.0,2.0
+Dummy Opt,2.0,2.0
+Bayesian Opt,2.0,2.0
+Successive Halving,2.0,2.0
+Cross Validation,2.0,2.0

@@ -1,2 +1,15 @@
-
 Tempo:
+Média de tempo no grid search: 43.006937235593796
+Média de tempo no random search: 43.87619438767433
+Média de tempo no dummy opt: 13.408900320529938
+Média de tempo no bayesian opt: 28.92642042040825
+Média de tempo no sucessive halving: 39.93409723043442
+Média de tempo no cross validation: 245.75782731175423
+
+Acc:
+Média de acc no grid search: 0.9929494177583696
+Média de acc no random search: 0.9925400291120815
+Média de acc no dummy opt: 0.9917667394468704
+Média de acc no bayesian opt: 0.9925855167394468
+Média de acc no sucessive halving: 0.9926310043668123
+Média de acc no cross validation: 0.9921306404657932
