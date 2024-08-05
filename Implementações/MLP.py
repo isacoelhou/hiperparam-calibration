@@ -180,17 +180,17 @@ def treinar_modelo_mlp(params):
     return 1 - accuracy_score(y_validacao, opiniao)
 
 def mlp_dummy_optimization(numero_colunas):
-    parametros = [([(numero_colunas, numero_colunas, numero_colunas), (2*numero_colunas, 2*numero_colunas, 2*numero_colunas)]), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
+    parametros = [
+        [(2,2,2), (numero_colunas, numero_colunas, numero_colunas), (2 * numero_colunas, 2 * numero_colunas, 2 * numero_colunas)],
+        ['constant', 'invscaling', 'adaptive'],
+        [50, 100, 150, 300, 500, 1000],
+        ['identity', 'logistic', 'tanh', 'relu']
+    ]
 
-    #print("Avaliação Teste usando Dummy")
     Resultado_rs = dummy_minimize(treinar_modelo_mlp, parametros, verbose=0, n_calls=30)
 
-    #print("\nMelhores parâmetros")
-    #print("hidden_layer_sizes: ", Resultado_rs.x[0], "learning_rate: ", Resultado_rs.x[1], "max_iter: ", Resultado_rs.x[2], "activation: ", Resultado_rs.x[3])
-
-    #print("\nDesempenho sobre o teste")
     MLP = MLPClassifier(hidden_layer_sizes=Resultado_rs.x[0], learning_rate=Resultado_rs.x[1], max_iter=Resultado_rs.x[2], activation=Resultado_rs.x[3])
-    MLP.fit(Vetor_X, Vetor_Y)
+    MLP.fit(x_treino, y_treino)
     opiniao = MLP.predict(x_teste)
     Acc = accuracy_score(y_teste, opiniao)
     return Acc
@@ -228,7 +228,7 @@ def media_valores(lista):
     return (sum(lista)/len(lista))
 
 
-dados = pd.read_csv("../datasets/letter-recognition.csv")
+dados = pd.read_csv("../datasets/Diabetes.csv")
 dados.head()
 
 df_dados = pd.DataFrame(dados)
