@@ -10,3 +10,6 @@
 (11, 'uniform')
 (16, 'distance')
 (16, 'distance')
+(np.int64(16), np.str_('distance'))
+(23, 'distance')
+(10, 'distance')
