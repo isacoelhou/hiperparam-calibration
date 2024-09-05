@@ -148,13 +148,11 @@ def dt_sucessive_halving():
 def treinar_modelo_dt(params):
     crit = params[0]
     split = params[1]
-    max_d = params[2]
-    min_sl = params[3]
+    min_ss = params[2]
+    max_d = params[3]
+    min_sl = params[4]
 
-#faltou adicionar o parâmetro min_samples_split no otimização bayesiana e na dummy
-    parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'), 'min_samples_split':[3,7],'max_depth':[3,4,5,7,10],'min_samples_leaf':[1,3,5]}
-
-    DT = tree.DecisionTreeClassifier(criterion=crit, splitter=split, max_depth=max_d, min_samples_leaf=min_sl)
+    DT = tree.DecisionTreeClassifier(criterion=crit, splitter=split, max_depth=max_d, min_samples_leaf=min_sl, min_samples_split=min_ss)
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_validacao)
     return 1 - accuracy_score(y_validacao, opiniao)
@@ -162,13 +160,9 @@ def treinar_modelo_dt(params):
 def dt_dummy_optimization():
     parametros = [('gini', 'entropy'), ('best', 'random'), (3,7), (3, 4, 5, 7, 10), (1, 3, 5)]
 
-    #print("Avaliação Teste usando Dummy")
     Resultado_rs = dummy_minimize(treinar_modelo_dt, parametros, verbose=0, n_calls=30)
 
-    #print("\nMelhores parâmetros")
-    #print("Critério: ", Resultado_rs.x[0], "Splitter: ", Resultado_rs.x[1], "Profundidade Max: ", Resultado_rs.x[2], "Min Folha: ", Resultado_rs.x[3])
-
-    #print("\nDesempenho sobre o teste")
+   
     DT = tree.DecisionTreeClassifier(criterion=Resultado_rs.x[0], splitter=Resultado_rs.x[1], max_depth=Resultado_rs.x[2], min_samples_leaf=Resultado_rs.x[3])
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_teste)
@@ -180,19 +174,14 @@ def dt_dummy_optimization():
 def dt_bayesian_optimization():
     parametros = [('gini', 'entropy'), ('best', 'random'), (3,7), (3, 4, 5, 7, 10), (1, 3, 5)]
 
-    #print("Avaliação da Otimização Bayesiana")
     Resultado_go = gp_minimize(treinar_modelo_dt, parametros, verbose=0, n_calls=30, n_random_starts=10)
 
-    #print("\nMelhores parâmetros")
-    #print("Critério: ", Resultado_go.x[0], "Splitter: ", Resultado_go.x[1], "Profundidade Max: ", Resultado_go.x[2], "Min Folha: ", Resultado_go.x[3])
 
-    #print("\nDesempenho sobre o teste")
-    DT = tree.DecisionTreeClassifier(criterion=Resultado_go.x[0], splitter=Resultado_go.x[1], max_depth=Resultado_go.x[2], min_samples_leaf=Resultado_go.x[3])
+    DT = tree.DecisionTreeClassifier(criterion=Resultado_go.x[0], splitter=Resultado_go.x[1], max_depth=Resultado_go.x[2], min_samples_leaf=Resultado_go.x[3], min_samples_split = Resultado_go[4])
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_teste)
     Acc = accuracy_score(y_teste, opiniao)
     return Acc
-    #print("Acurácia: ", Acc)
 
 
 def media_valores(lista):

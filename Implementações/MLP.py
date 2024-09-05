@@ -228,7 +228,7 @@ def media_valores(lista):
     return (sum(lista)/len(lista))
 
 
-dados = pd.read_csv("../datasets/letter-recognition.csv")
+dados = pd.read_csv("../datasets/diabetes.csv")
 dados.head()
 
 df_dados = pd.DataFrame(dados)

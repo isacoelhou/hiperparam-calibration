@@ -1,0 +1,7 @@
+(34, 'adaptive', 300, 'tanh')
+(34, 'constant', 300, 'tanh')
+(18, 'constant', 1000, 'logistic')
+(9, 'invscaling', 1000, 'relu')
+(np.int64(18), np.str_('adaptive'), np.int64(1000), np.str_('logistic'))
+((9, 9, 9), 'constant', 500, 'identity')
+((18, 18, 18), 'constant', 500, 'logistic')

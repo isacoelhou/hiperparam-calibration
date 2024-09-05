@@ -2,7 +2,6 @@ import pandas as pd
 import random
 from sklearn.model_selection import train_test_split
 
-from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import GridSearchCV
 
@@ -15,9 +14,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from skopt import gp_minimize
 from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
 
 import time
-
 
 def save_params(params, filename):
     with open(filename, "a") as f:
@@ -60,8 +59,8 @@ def dt_random_search():
         i = random.choice(("best", "random"))
         j = random.choice(("gini", "entropy"))
         k = random.randint(3, 7)
-        l = random.choice((5, 6, 8, 10))
-        m = random.randint(3, 6)
+        l = random.randint(5,10)
+        m = random.randint(3,6)
 
         DT = tree.DecisionTreeClassifier(criterion=j, splitter=i, max_depth=k, min_samples_split=l, min_samples_leaf=m)
         DT.fit(x_treino, y_treino)
@@ -87,38 +86,39 @@ def dt_random_search():
     return Acc
 
 def dt_cross_validation():
-    parametros = {'criterion': ('gini', 'entropy'), 'splitter': ('best', 'random'), 'max_depth': [3, 4, 5, 7, 10], 'min_samples_split': [3, 7], 'min_samples_leaf': [1, 3, 5]}
+    parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'),'max_depth':[3,4,5,7,10], 'min_samples_split':[3,7] ,'min_samples_leaf':[1,3,5]}
 
     DT = tree.DecisionTreeClassifier()
-    Classificador = GridSearchCV(estimator=DT, param_grid=parametros, scoring='accuracy', cv=5)
+    Classificador = GridSearchCV(estimator=DT,param_grid=parametros,scoring='accuracy',cv=5)
 
-    Classificador.fit(Vetor_X, Vetor_Y)
+    Classificador.fit(Vetor_X,Vetor_Y)
     pd.DataFrame(Classificador.cv_results_)
-
-    best_params = Classificador.best_params_
     
-    DT = tree.DecisionTreeClassifier(criterion=best_params['criterion'], splitter=best_params['splitter'], max_depth=best_params['max_depth'], min_samples_split=best_params['min_samples_split'], min_samples_leaf=best_params['min_samples_leaf'])
+    DT = tree.DecisionTreeClassifier(criterion=Classificador.best_params_['criterion'], splitter=Classificador.best_params_['splitter'], max_depth=Classificador.best_params_['max_depth'], min_samples_split=Classificador.best_params_['min_samples_split'], min_samples_leaf=Classificador.best_params_['min_samples_leaf'])
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_teste)
     Acc = accuracy_score(y_teste, opiniao)
+    
+    best_params = Classificador.best_params_
     
     save_params((best_params['splitter'], best_params['criterion'], best_params['max_depth'], best_params['min_samples_split'], best_params['min_samples_leaf']),  "DT_PARAMS")
 
     return Acc
 
 def dt_sucessive_halving():
-    parametros = {'criterion': ('gini', 'entropy'), 'splitter': ('best', 'random'), 'min_samples_split': [3, 7], 'max_depth': [3, 4, 5, 7, 10], 'min_samples_leaf': [1, 3, 5]}
+
+    parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'),'min_samples_split':[3,7], 'max_depth':[3,4,5,7,10],'min_samples_leaf':[1,3,5]}
     DT = tree.DecisionTreeClassifier()
-    Classificador = HalvingGridSearchCV(DT, parametros, cv=5)
+    Classificador = HalvingGridSearchCV(DT, parametros,cv=5)
 
-    Classificador.fit(Vetor_X, Vetor_Y)
+    Classificador.fit(Vetor_X,Vetor_Y)
 
-    best_params = Classificador.best_params_
-    
-    DT = tree.DecisionTreeClassifier(criterion=best_params['criterion'], splitter=best_params['splitter'], max_depth=best_params['max_depth'], min_samples_split=best_params['min_samples_split'], min_samples_leaf=best_params['min_samples_leaf'])
+    DT = tree.DecisionTreeClassifier(criterion=Classificador.best_params_['criterion'], splitter=Classificador.best_params_['splitter'], max_depth=Classificador.best_params_['max_depth'], min_samples_split=Classificador.best_params_['min_samples_split'], min_samples_leaf=Classificador.best_params_['min_samples_leaf'])
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_teste)
     Acc = accuracy_score(y_teste, opiniao)
+    
+    best_params = Classificador.best_params_
     
     save_params((best_params['splitter'], best_params['criterion'], best_params['max_depth'], best_params['min_samples_split'], best_params['min_samples_leaf']), "DT_PARAMS")
 
@@ -127,30 +127,27 @@ def dt_sucessive_halving():
 def treinar_modelo_dt(params):
     crit = params[0]
     split = params[1]
-    max_d = params[2]
-    min_sl = params[3]
-    mss = params[4]
+    min_ss = params[2]
+    max_d = params[3]
+    min_sl = params[4]
 
-    DT = tree.DecisionTreeClassifier(criterion=crit, splitter=split, max_depth=max_d, min_samples_leaf=min_sl, min_samples_split = mss)
+    DT = tree.DecisionTreeClassifier(criterion=crit, splitter=split, max_depth=max_d, min_samples_leaf=min_sl, min_samples_split=min_ss)
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_validacao)
     return 1 - accuracy_score(y_validacao, opiniao)
 
 def dt_bayesian_optimization():
-  
-    parametros = [('gini', 'entropy'), ('best', 'random'), (3, 7), (3, 4, 5, 7, 10), (1, 3, 5)]
+    parametros = [('gini', 'entropy'), ('best', 'random'), (3,7), (3, 4, 5, 7, 10), (1, 3, 5)]
 
     Resultado_go = gp_minimize(treinar_modelo_dt, parametros, verbose=0, n_calls=30, n_random_starts=10)
 
-    DT = tree.DecisionTreeClassifier(criterion=Resultado_go.x[0], splitter=Resultado_go.x[1], max_depth=Resultado_go.x[2], min_samples_leaf=Resultado_go.x[3], min_samples_split=Resultado_go[4])
+    DT = tree.DecisionTreeClassifier(criterion=Resultado_go.x[0], splitter=Resultado_go.x[1], max_depth=Resultado_go.x[2], min_samples_leaf=Resultado_go.x[3], min_samples_split = Resultado_go.x[4])
     DT.fit(x_treino, y_treino)
     opiniao = DT.predict(x_teste)
     Acc = accuracy_score(y_teste, opiniao)
-    
-    save_params((Resultado_go.x[1], Resultado_go.x[0], Resultado_go.x[2], Resultado_go.x[3], Resultado_go.x[4]), "DT_PARAMS")
 
+    save_params((Resultado_go.x[0], Resultado_go.x[1], Resultado_go.x[2], Resultado_go.x[3], Resultado_go.x[4]), "DT_PARAMS")
     return Acc
-
 
 def knn_grid_search():  
   maior = -1
@@ -292,14 +289,13 @@ def knn_bayesian_optimization():
 
     return Acc
 
-
 def mlp_random_search(numero_colunas):
     maior = -1
 
-    for n in range(50):
+    for _ in range(50):
         i = random.choice((numero_colunas, (2 * numero_colunas)))
         j = random.choice(('constant', 'invscaling', 'adaptive'))
-        k = random.choice((50, 100, 150, 300, 500, 1000))
+        k = random.randint(50, 1000)
         l = random.choice(('identity', 'logistic', 'tanh', 'relu'))
 
         MLP = MLPClassifier(hidden_layer_sizes=(i, i, i), learning_rate=j, max_iter=k, activation=l, verbose=False)
@@ -425,17 +421,12 @@ def treinar_modelo_mlp(params):
     return 1 - accuracy_score(y_validacao, opiniao)
 
 def mlp_bayesian_optimization(numero_colunas):
-    parametros = [
-        [(numero_colunas, numero_colunas, numero_colunas), (2 * numero_colunas, 2 * numero_colunas, 2 * numero_colunas)],
-        ['constant', 'invscaling', 'adaptive'],
-        [50, 100, 150, 300, 500, 1000],
-        ['identity', 'logistic', 'tanh', 'relu']
-    ]
+    parametros = [(numero_colunas,2*numero_colunas), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
 
     Resultado_go = gp_minimize(treinar_modelo_mlp, parametros, verbose=0, n_calls=30, n_random_starts=10)
 
     MLP = MLPClassifier(hidden_layer_sizes=Resultado_go.x[0], learning_rate=Resultado_go.x[1], max_iter=Resultado_go.x[2], activation=Resultado_go.x[3])
-    MLP.fit(x_treino, y_treino)
+    MLP.fit(Vetor_X, Vetor_Y)
     opiniao = MLP.predict(x_teste)
     Acc = accuracy_score(y_teste, opiniao)
     
@@ -479,11 +470,11 @@ def rf_random_search():
     maior = -1
 
     for _ in range(15):
-        i = random.choice((10, 20, 30, 50, 75, 100))
+        i = random.randint(10, 100)
         j = random.choice(("gini", "entropy"))
-        k = random.choice((3, 4, 5, 6, 7))
-        l = random.choice((5, 6, 8, 10))
-        m = random.choice((3, 4, 5, 6))
+        k = random.choice(3,7)
+        l = random.choice(5, 10)
+        m = random.choice(3,6)
 
         RF = RandomForestClassifier(n_estimators=i, criterion=j, max_depth=k, min_samples_split=l, min_samples_leaf=m)
         RF.fit(x_treino, y_treino)
@@ -640,7 +631,7 @@ def svm_random_search():
     maior = -1
 
     for _ in range(15):
-        i = random.choice((0.1, 0.2, 0.3, 0.5, 0.7, 0.8, 1))
+        i = random.uniform(0.1, 1)
         j = random.choice(('linear', 'poly', 'rbf', 'sigmoid'))
         SVM = svm.SVC(C=i, kernel=j)
         SVM.fit(x_treino, y_treino)
@@ -767,9 +758,9 @@ sh_SVM = []
 bo_SVM = []
 do_SVM = []
 
-for _ in range(10):
+for _ in range(1):
 
-    dados = pd.read_csv("../datasets/letter-recognition.csv")
+    dados = pd.read_csv("../datasets/Diabetes.csv")
     dados = shuffle(dados)
     
     df_dados = pd.DataFrame(dados)
