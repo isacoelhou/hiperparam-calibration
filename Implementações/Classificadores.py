@@ -18,8 +18,16 @@ from sklearn.neural_network import MLPClassifier
 
 import time
 
+import os
+
+import os
+
 def save_params(params, filename):
-    with open(filename, "a") as f:
+    pasta_params = "Params"
+    filename += ".txt"
+
+    caminho_arquivo = os.path.join(pasta_params, filename)
+    with open(caminho_arquivo, "a") as f:
         f.write(f"{params}\n")
 
 def dt_grid_search():
@@ -86,7 +94,7 @@ def dt_random_search():
     return Acc
 
 def dt_cross_validation():
-    parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'),'max_depth':[3,4,5,7,10], 'min_samples_split':[3,7] ,'min_samples_leaf':[1,3,5]}
+    parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'),'max_depth':[3,4,5,7,10], 'min_samples_split':[3,7] ,'min_samples_leaf':[2,3,5]}
 
     DT = tree.DecisionTreeClassifier()
     Classificador = GridSearchCV(estimator=DT,param_grid=parametros,scoring='accuracy',cv=5)
@@ -378,7 +386,6 @@ def mlp_cross_validation(numero_colunas):
 
     return Acc
 
-
 def mlp_sucessive_halving(numero_colunas):
     parametros = {
         'hidden_layer_sizes': [(numero_colunas, numero_colunas, numero_colunas), (2 * numero_colunas, 2 * numero_colunas, 2 * numero_colunas)],
@@ -469,12 +476,12 @@ def rf_grid_search():
 def rf_random_search():
     maior = -1
 
-    for _ in range(15):
+    for _ in range(50):
         i = random.randint(10, 100)
         j = random.choice(("gini", "entropy"))
-        k = random.choice(3,7)
-        l = random.choice(5, 10)
-        m = random.choice(3,6)
+        k = random.randint(3,7)
+        l = random.randint(5, 10)
+        m = random.randint(3,6)
 
         RF = RandomForestClassifier(n_estimators=i, criterion=j, max_depth=k, min_samples_split=l, min_samples_leaf=m)
         RF.fit(x_treino, y_treino)
@@ -599,7 +606,6 @@ def rf_bayesian_optimization():
     save_params((Resultado_go.x[1], Resultado_go.x[0], Resultado_go.x[2], Resultado_go.x[3], Resultado_go.x[4]), "RF_PARAMS")
     
     return Acc
-
 
 def svm_grid_search():
     maior = -1
@@ -749,7 +755,6 @@ rs_RF = []
 cv_RF = []
 sh_RF = []
 bo_RF = []
-
 do_RF = []
 
 gs_SVM = []
@@ -759,9 +764,9 @@ sh_SVM = []
 bo_SVM = []
 do_SVM = []
 
-for _ in range(1):
+for _ in range(10):
 
-    dados = pd.read_csv("../datasets/Diabetes.csv")
+    dados = pd.read_csv("../datasets/letter-recognition.csv")
     dados = shuffle(dados)
     
     df_dados = pd.DataFrame(dados)
@@ -775,7 +780,7 @@ for _ in range(1):
     x_treino,x_temp,y_treino,y_temp = train_test_split(df_dados,dados["Class"],test_size=0.5,stratify=dados["Class"])
     x_validacao,x_teste,y_validacao,y_teste = train_test_split(x_temp,y_temp,test_size=0.5, stratify = y_temp)
 
-    # DT
+   # DT
     inicio = time.time()
     acc = dt_grid_search()
     fim = time.time()
