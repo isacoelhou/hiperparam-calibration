@@ -115,7 +115,7 @@ def dt_cross_validation():
 
 def dt_sucessive_halving():
 
-    parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'),'min_samples_split':[3,7], 'max_depth':[3,4,5,7,10],'min_samples_leaf':[1,3,5]}
+    parametros = {'criterion':('gini', 'entropy'), 'splitter':('best','random'),'min_samples_split':[3,7], 'max_depth':[3,4,5,7,10],'min_samples_leaf':[3,5]}
     DT = tree.DecisionTreeClassifier()
     Classificador = HalvingGridSearchCV(DT, parametros,cv=5)
 
@@ -145,7 +145,7 @@ def treinar_modelo_dt(params):
     return 1 - accuracy_score(y_validacao, opiniao)
 
 def dt_bayesian_optimization():
-    parametros = [('gini', 'entropy'), ('best', 'random'), (3,7), (3, 4, 5, 7, 10), (1, 3, 5)]
+    parametros = [('gini', 'entropy'), ('best', 'random'), (3,7), (3, 4, 5, 7, 10), (3, 5)]
 
     Resultado_go = gp_minimize(treinar_modelo_dt, parametros, verbose=0, n_calls=30, n_random_starts=10)
 

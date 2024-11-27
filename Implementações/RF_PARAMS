@@ -1,3 +1,0 @@
-(20, 'entropy', 7, 5, 4)
-(50, 'gini', 4, 8, 4)
-(np.int64(75), np.str_('entropy'), np.int64(7), np.int64(6), np.int64(3))
