@@ -728,41 +728,51 @@ def media_valores(lista):
 
     return (sum(lista)/len(lista))
 
-# Inicialização das listas de tuplas
-gs_DT = []
-rs_DT = []
-cv_DT = []
-sh_DT = []
-bo_DT = []
-do_DT = []
+def salvar_resultados_csv(metodo, estrategia, acc, tempo):
+    file_path = f'./stats/{metodo}stats.csv'
+    try:
+        df = pd.read_csv(file_path, index_col=0)
+    except FileNotFoundError:
+        df = pd.DataFrame(columns=["Estrategia", "Acc", "Tempo"]).set_index("Estrategia")
+    
+    df.loc[estrategia] = [acc, tempo]
+    df.to_csv(file_path)
 
-gs_KNN = []
-rs_KNN = []
-cv_KNN = []
-sh_KNN = []
-bo_KNN = []
-do_KNN = []
+# # Inicialização das listas de tuplas
+# gs_DT = []
+# rs_DT = []
+# cv_DT = []
+# sh_DT = []
+# bo_DT = []
+# do_DT = []
 
-gs_MLP = []
-rs_MLP = []
-cv_MLP = []
-sh_MLP = []
-bo_MLP = []
-do_MLP = []
+# gs_KNN = []
+# rs_KNN = []
+# cv_KNN = []
+# sh_KNN = []
+# bo_KNN = []
+# do_KNN = []
 
-gs_RF = []
-rs_RF = []
-cv_RF = []
-sh_RF = []
-bo_RF = []
-do_RF = []
+# gs_MLP = []
+# rs_MLP = []
+# cv_MLP = []
+# sh_MLP = []
+# bo_MLP = []
+# do_MLP = []
 
-gs_SVM = []
-rs_SVM = []
-cv_SVM = []
-sh_SVM = []
-bo_SVM = []
-do_SVM = []
+# gs_RF = []
+# rs_RF = []
+# cv_RF = []
+# sh_RF = []
+# bo_RF = []
+# do_RF = []
+
+# gs_SVM = []
+# rs_SVM = []
+# cv_SVM = []
+# sh_SVM = []
+# bo_SVM = []
+# do_SVM = []
 
 for _ in range(10):
 
@@ -784,216 +794,216 @@ for _ in range(10):
     inicio = time.time()
     acc = dt_grid_search()
     fim = time.time()
-    gs_DT.append((acc, fim - inicio))
-
+    salvar_resultados_csv('DT', 'GS', fim - inicio, acc)
+    
     inicio = time.time()
     acc = dt_random_search()
     fim = time.time()
-    rs_DT.append((acc, fim - inicio))
+    salvar_resultados_csv('DT', 'RS', fim - inicio, acc)
+
 
     inicio = time.time()
     acc = dt_bayesian_optimization()
     fim = time.time()
-    bo_DT.append((acc, fim - inicio))
+    salvar_resultados_csv('BO', 'GS', fim - inicio, acc)
 
     inicio = time.time()
     acc = dt_cross_validation()
     fim = time.time()
-    cv_DT.append((acc, fim - inicio))
+    salvar_resultados_csv('DT', 'CV', fim - inicio, acc)
 
     inicio = time.time()
     acc = dt_sucessive_halving()
     fim = time.time()
-    sh_DT.append((acc, fim - inicio))
+    salvar_resultados_csv('SH', 'GS', fim - inicio, acc)
 
     # KNN
     inicio = time.time()
     acc = knn_grid_search()
     fim = time.time()
-    gs_KNN.append((acc, fim - inicio))
+    salvar_resultados_csv('KNN', 'GS', fim - inicio, acc)
 
     inicio = time.time()
     acc = knn_random_search()
     fim = time.time()
-    rs_KNN.append((acc, fim - inicio))
+    salvar_resultados_csv('KNN', 'RS', fim - inicio, acc)
 
     inicio = time.time()
     acc = knn_bayesian_optimization()
     fim = time.time()
-    bo_KNN.append((acc, fim - inicio))
+    salvar_resultados_csv('KNN', 'BO', fim - inicio, acc)
 
     inicio = time.time()
     acc = knn_cross_validation()
     fim = time.time()
-    cv_KNN.append((acc, fim - inicio))
+    salvar_resultados_csv('KNN', 'CV', fim - inicio, acc)
 
     inicio = time.time()
     acc = knn_sucessive_halving()
     fim = time.time()
-    sh_KNN.append((acc, fim - inicio))
+    salvar_resultados_csv('KNN', 'SH', fim - inicio, acc)
 
     # MLP
     inicio = time.time()
     acc = mlp_grid_search(numero_colunas)
     fim = time.time()
-    gs_MLP.append((acc, fim - inicio))
+    salvar_resultados_csv('MLP', 'GS', fim - inicio, acc)
 
     inicio = time.time()
     acc = mlp_random_search(numero_colunas)
     fim = time.time()
-    rs_MLP.append((acc, fim - inicio))
+    salvar_resultados_csv('MLP', 'RS', fim - inicio, acc)
 
     inicio = time.time()
     acc = mlp_bayesian_optimization(numero_colunas)
     fim = time.time()
-    bo_MLP.append((acc, fim - inicio))
+    salvar_resultados_csv('MLP', 'BO', fim - inicio, acc)
 
     inicio = time.time()
     acc = mlp_cross_validation(numero_colunas)
     fim = time.time()
-    cv_MLP.append((acc, fim - inicio))
+    salvar_resultados_csv('MLP', 'CV', fim - inicio, acc)
 
     inicio = time.time()
     acc = mlp_sucessive_halving(numero_colunas)
     fim = time.time()
-    sh_MLP.append((acc, fim - inicio))
+    salvar_resultados_csv('MLP', 'SH', fim - inicio, acc)
 
     # RF
     inicio = time.time()
     acc = rf_grid_search()
     fim = time.time()
-    gs_RF.append((acc, fim - inicio))
+    salvar_resultados_csv('RF', 'GS', fim - inicio, acc)
 
     inicio = time.time()
     acc = rf_random_search()
     fim = time.time()
-    rs_RF.append((acc, fim - inicio))
+    salvar_resultados_csv('RF', 'RS', fim - inicio, acc)
 
     inicio = time.time()
     acc = rf_bayesian_optimization()
     fim = time.time()
-    bo_RF.append((acc, fim - inicio))
+    salvar_resultados_csv('RF', 'BO', fim - inicio, acc)
 
     inicio = time.time()
     acc = rf_cross_validation()
     fim = time.time()
-    cv_RF.append((acc, fim - inicio))
+    salvar_resultados_csv('RF', 'CV', fim - inicio, acc)
 
     inicio = time.time()
     acc = rf_sucessive_halving()
     fim = time.time()
-    sh_RF.append((acc, fim - inicio))
+    salvar_resultados_csv('RF', 'SH', fim - inicio, acc)
 
     # SVM
     inicio = time.time()
     acc = svm_grid_search()
     fim = time.time()
-    gs_SVM.append((acc, fim - inicio))
+    salvar_resultados_csv('SVM', 'GS', fim - inicio, acc)
 
     inicio = time.time()
     acc = svm_random_search()
     fim = time.time()
-    rs_SVM.append((acc, fim - inicio))
+    salvar_resultados_csv('SVM', 'RS', fim - inicio, acc)
 
     inicio = time.time()
     acc = svm_bayesian_optimization()
     fim = time.time()
-    bo_SVM.append((acc, fim - inicio))
+    salvar_resultados_csv('SVM', 'BO', fim - inicio, acc)
 
     inicio = time.time()
     acc = svm_cross_validation()
     fim = time.time()
-    cv_SVM.append((acc, fim - inicio))
+    salvar_resultados_csv('SVM', 'CV', fim - inicio, acc)
 
     inicio = time.time()
     acc = svm_sucessive_halving()
     fim = time.time()
-    sh_SVM.append((acc, fim - inicio))
-
+    salvar_resultados_csv('SVM', 'SH', fim - inicio, acc)
 
 import pandas as pd
 import numpy as np
 
-def media_valores(lista_tuplas, indice):
+# def media_valores(lista_tuplas, indice):
   
-  valores = [tupla[indice] for tupla in lista_tuplas]
+#   valores = [tupla[indice] for tupla in lista_tuplas]
 
-  valores.remove(max(valores))
-  valores.remove(min(valores))
+#   valores.remove(max(valores))
+#   valores.remove(min(valores))
 
-  return np.mean(valores)
+#   return np.mean(valores)
 
 
-estrategias = ["Grid Search", "Random Search", "Bayesian Opt", "Successive Halving", "Cross Validation"]
+# estrategias = ["Grid Search", "Random Search", "Bayesian Opt", "Successive Halving", "Cross Validation"]
 
-tempos = [media_valores(gs_DT, 1), media_valores(rs_DT, 1), media_valores(bo_DT, 1), media_valores(sh_DT, 1), media_valores(cv_DT, 1)]
-acuracias = [media_valores(gs_DT, 0), media_valores(rs_DT, 0), media_valores(bo_DT, 0), media_valores(sh_DT, 0), media_valores(cv_DT, 0)]
+# tempos = [media_valores(gs_DT, 1), media_valores(rs_DT, 1), media_valores(bo_DT, 1), media_valores(sh_DT, 1), media_valores(cv_DT, 1)]
+# acuracias = [media_valores(gs_DT, 0), media_valores(rs_DT, 0), media_valores(bo_DT, 0), media_valores(sh_DT, 0), media_valores(cv_DT, 0)]
 
-df = pd.DataFrame({
-    'Estrategia': estrategias,
-    'Tempo': tempos,
-    'Acc': acuracias
-})
+# df = pd.DataFrame({
+#     'Estrategia': estrategias,
+#     'Tempo': tempos,
+#     'Acc': acuracias
+# })
 
-df.set_index('Estrategia', inplace=True)
-df.to_csv('./stats/DTstats.csv')
+# df.set_index('Estrategia', inplace=True)
+# df.to_csv('./stats/DTstats.csv')
 
-#############################################################################################
+# #############################################################################################
 
-# KNN
-tempos = [media_valores(gs_KNN, 1), media_valores(rs_KNN, 1), media_valores(bo_KNN, 1), media_valores(sh_KNN, 1), media_valores(cv_KNN, 1)]
-acuracias = [media_valores(gs_KNN, 0), media_valores(rs_KNN, 0), media_valores(bo_KNN, 0), media_valores(sh_KNN, 0), media_valores(cv_KNN, 0)]
+# # KNN
+# tempos = [media_valores(gs_KNN, 1), media_valores(rs_KNN, 1), media_valores(bo_KNN, 1), media_valores(sh_KNN, 1), media_valores(cv_KNN, 1)]
+# acuracias = [media_valores(gs_KNN, 0), media_valores(rs_KNN, 0), media_valores(bo_KNN, 0), media_valores(sh_KNN, 0), media_valores(cv_KNN, 0)]
 
-df = pd.DataFrame({
-    'Estrategia': estrategias,
-    'Tempo': tempos,
-    'Acc': acuracias
-})
+# df = pd.DataFrame({
+#     'Estrategia': estrategias,
+#     'Tempo': tempos,
+#     'Acc': acuracias
+# })
 
-df.set_index('Estrategia', inplace=True)
-df.to_csv('./stats/KNNstats.csv')
+# df.set_index('Estrategia', inplace=True)
+# df.to_csv('./stats/KNNstats.csv')
 
-##########################################################################################
+# ##########################################################################################
 
-# MLP
-tempos = [media_valores(gs_MLP, 1), media_valores(rs_MLP, 1), media_valores(bo_MLP, 1), media_valores(sh_MLP, 1), media_valores(cv_MLP, 1)]
-acuracias = [media_valores(gs_MLP, 0), media_valores(rs_MLP, 0), media_valores(bo_MLP, 0), media_valores(sh_MLP, 0), media_valores(cv_MLP, 0)]
+# # MLP
+# tempos = [media_valores(gs_MLP, 1), media_valores(rs_MLP, 1), media_valores(bo_MLP, 1), media_valores(sh_MLP, 1), media_valores(cv_MLP, 1)]
+# acuracias = [media_valores(gs_MLP, 0), media_valores(rs_MLP, 0), media_valores(bo_MLP, 0), media_valores(sh_MLP, 0), media_valores(cv_MLP, 0)]
 
-df = pd.DataFrame({
-    'Estrategia': estrategias,
-    'Tempo': tempos,
-    'Acc': acuracias
-})
+# df = pd.DataFrame({
+#     'Estrategia': estrategias,
+#     'Tempo': tempos,
+#     'Acc': acuracias
+# })
 
-df.set_index('Estrategia', inplace=True)
-df.to_csv('./stats/MLPstats.csv')
+# df.set_index('Estrategia', inplace=True)
+# df.to_csv('./stats/MLPstats.csv')
 
-##########################################################################################
+# ##########################################################################################
 
-# Random Forest (RF)
-tempos = [media_valores(gs_RF, 1), media_valores(rs_RF, 1),media_valores(bo_RF, 1), media_valores(sh_RF, 1), media_valores(cv_RF, 1)]
-acuracias = [media_valores(gs_RF, 0), media_valores(rs_RF, 0),media_valores(bo_RF, 0), media_valores(sh_RF, 0), media_valores(cv_RF, 0)]
+# # Random Forest (RF)
+# tempos = [media_valores(gs_RF, 1), media_valores(rs_RF, 1),media_valores(bo_RF, 1), media_valores(sh_RF, 1), media_valores(cv_RF, 1)]
+# acuracias = [media_valores(gs_RF, 0), media_valores(rs_RF, 0),media_valores(bo_RF, 0), media_valores(sh_RF, 0), media_valores(cv_RF, 0)]
 
-df = pd.DataFrame({
-    'Estrategia': estrategias,
-    'Tempo': tempos,
-    'Acc': acuracias
-})
+# df = pd.DataFrame({
+#     'Estrategia': estrategias,
+#     'Tempo': tempos,
+#     'Acc': acuracias
+# })
 
-df.set_index('Estrategia', inplace=True)
-df.to_csv('./stats/RFstats.csv')
+# df.set_index('Estrategia', inplace=True)
+# df.to_csv('./stats/RFstats.csv')
 
-##############################################################################################
+# ##############################################################################################
 
-# SVM
-tempos = [media_valores(gs_SVM, 1), media_valores(rs_SVM, 1), media_valores(bo_SVM, 1), media_valores(sh_SVM, 1), media_valores(cv_SVM, 1)]
-acuracias = [media_valores(gs_SVM, 0), media_valores(rs_SVM, 0), media_valores(bo_SVM, 0), media_valores(sh_SVM, 0), media_valores(cv_SVM, 0)]
+# # SVM
+# tempos = [media_valores(gs_SVM, 1), media_valores(rs_SVM, 1), media_valores(bo_SVM, 1), media_valores(sh_SVM, 1), media_valores(cv_SVM, 1)]
+# acuracias = [media_valores(gs_SVM, 0), media_valores(rs_SVM, 0), media_valores(bo_SVM, 0), media_valores(sh_SVM, 0), media_valores(cv_SVM, 0)]
 
-df = pd.DataFrame({
-    'Estrategia': estrategias,
-    'Tempo': tempos,
-    'Acc': acuracias
-})
+# df = pd.DataFrame({
+#     'Estrategia': estrategias,
+#     'Tempo': tempos,
+#     'Acc': acuracias
+# })
 
-df.set_index('Estrategia', inplace=True)
-df.to_csv('./stats/SVMstats.csv')
+# df.set_index('Estrategia', inplace=True)
+# df.to_csv('./stats/SVMstats.csv')
