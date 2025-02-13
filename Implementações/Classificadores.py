@@ -805,7 +805,7 @@ for _ in range(10):
     inicio = time.time()
     acc = dt_bayesian_optimization()
     fim = time.time()
-    salvar_resultados_csv('BO', 'GS', fim - inicio, acc)
+    salvar_resultados_csv('DT', 'BO', fim - inicio, acc)
 
     inicio = time.time()
     acc = dt_cross_validation()
@@ -815,7 +815,7 @@ for _ in range(10):
     inicio = time.time()
     acc = dt_sucessive_halving()
     fim = time.time()
-    salvar_resultados_csv('SH', 'GS', fim - inicio, acc)
+    salvar_resultados_csv('DT', 'SH', fim - inicio, acc)
 
     # KNN
     inicio = time.time()
