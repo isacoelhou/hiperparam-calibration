@@ -199,6 +199,10 @@ for _ in range(1):
     x_treino,x_temp,y_treino,y_temp = train_test_split(df_dados,dados["Class"],test_size=0.5,stratify=dados["Class"])
     x_validacao,x_teste,y_validacao,y_teste = train_test_split(x_temp,y_temp,test_size=0.5, stratify = y_temp)
 
+    inicio = time.time()
+    acc = RF_tpe_optimization()
+    fim = time.time()
+
     RF_tpe_optimization()
     MLP_tpe_optimization()
     KNN_tpe_optimization()
