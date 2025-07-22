@@ -183,7 +183,6 @@ def dt_bayesian_optimization():
     Acc = accuracy_score(y_teste, opiniao)
     return Acc
 
-
 def media_valores(lista):
 
     menor_numero = min(lista)

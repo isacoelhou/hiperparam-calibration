@@ -20,7 +20,6 @@ import time
 
 import os
 
-import os
 
 def save_params(params, filename):
     pasta_params = "Params"

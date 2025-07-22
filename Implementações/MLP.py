@@ -3,6 +3,12 @@ import pandas as pd
 import random
 from sklearn.model_selection import train_test_split
 
+from skopt import dummy_minimize
+from skopt import gp_minimize
+import warnings
+from sklearn.exceptions import ConvergenceWarning
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
+
 from sklearn.metrics import classification_report
 from sklearn.metrics import accuracy_score
 from sklearn import metrics
@@ -197,24 +203,49 @@ def mlp_dummy_optimization(numero_colunas):
     #print("Acurácia: ", Acc)
     #print("\n=========================================================================\n")
 
-def mlp_bayesian_optimization(numero_colunas):
-    #parametros = [([(5, 5, 5), (6, 6, 6), (10, 10, 10), (12, 12, 12)]), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
-    parametros = [(numero_colunas,2*numero_colunas), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
+# def mlp_bayesian_optimization(numero_colunas):
+#     #parametros = [([(5, 5, 5), (6, 6, 6), (10, 10, 10), (12, 12, 12)]), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
+#     parametros = [(numero_colunas,2*numero_colunas), ('constant', 'invscaling', 'adaptive'), (50, 100, 150, 300, 500, 1000), ('identity', 'logistic', 'tanh', 'relu')]
 
-    #print("Avaliação da Otimização Bayesiana")
-    Resultado_go = gp_minimize(treinar_modelo_mlp, parametros, verbose=0, n_calls=30, n_random_starts=10)
+#     #print("Avaliação da Otimização Bayesiana")
+#     Resultado_go = gp_minimize(treinar_modelo_mlp, parametros, verbose=0, n_calls=30, n_random_starts=10)
 
-    #print("\nMelhores parâmetros")
-    #print("hidden_layer_sizes: ", Resultado_go.x[0], "learning_rate: ", Resultado_go.x[1], "max_iter: ", Resultado_go.x[2], "activation: ", Resultado_go.x[3])
+#     #print("\nMelhores parâmetros")
+#     #print("hidden_layer_sizes: ", Resultado_go.x[0], "learning_rate: ", Resultado_go.x[1], "max_iter: ", Resultado_go.x[2], "activation: ", Resultado_go.x[3])
 
-    #print("\nDesempenho sobre o teste")
-    MLP = MLPClassifier(hidden_layer_sizes=Resultado_go.x[0], learning_rate=Resultado_go.x[1], max_iter=Resultado_go.x[2], activation=Resultado_go.x[3])
-    MLP.fit(Vetor_X, Vetor_Y)
-    opiniao = MLP.predict(x_teste)
-    Acc = accuracy_score(y_teste, opiniao)
-    #print("Acurácia: ", Acc)
+#     #print("\nDesempenho sobre o teste")
+#     MLP = MLPClassifier(hidden_layer_sizes=Resultado_go.x[0], learning_rate=Resultado_go.x[1], max_iter=Resultado_go.x[2], activation=Resultado_go.x[3])
+#     MLP.fit(Vetor_X, Vetor_Y)
+#     opiniao = MLP.predict(x_teste)
+#     Acc = accuracy_score(y_teste, opiniao)
+#     #print("Acurácia: ", Acc)
 
-    return Acc
+#     return Acc
+def treinar_modelo(params):
+  hidden_layers = (params[0], params[1], params[2])
+  lrate = params[3]
+  iter = params[4]
+  act = params[5]
+  MLP = MLPClassifier(hidden_layer_sizes=hidden_layers,learning_rate=lrate, max_iter=iter, activation=act)
+  MLP.fit(x_treino,y_treino)
+  opiniao = MLP.predict(x_validacao)
+  return 1-(accuracy_score(y_validacao, opiniao))
+ 
+def mlp_bayesian_optimization():
+  #configuração dos parametros -> 1ª camada, 2ª camada, 3ª camada, learning_rate, max_iter, activation
+  parametros = [(5,6,10,12),(5,6,10,12),(5,6,10,12),('constant','invscaling', 'adaptive'),(50,100,150,300,500,1000),('identity', 'logistic', 'tanh', 'relu'),]
+  
+  print("\nAvaliação da Otimização Bayesiana")
+  Resultado_go = gp_minimize(treinar_modelo,parametros,verbose=0,n_calls=30,n_random_starts=10)
+  print("\nMelhores parâmetros")
+  print("1ª camada: ", Resultado_go.x[0],"\n2ª camada: ",Resultado_go.x[1],"\n3ª camada: ",Resultado_go.x[2],"\nLearning Rate: ",Resultado_go.x[3],"\nIterações: ",Resultado_go.x[4],"\nFunção de Ativação: ",Resultado_go.x[5],"\nAcurácia: ",1-Resultado_go.fun)
+  
+  print("\n\nResultados da Bayesian Optimization sobre o conjunto de teste")
+  hidden_layers = (Resultado_go.x[0], Resultado_go.x[1], Resultado_go.x[2])
+  MLP = MLPClassifier(hidden_layer_sizes=hidden_layers,learning_rate=Resultado_go.x[3],max_iter=Resultado_go.x[4],activation=Resultado_go.x[5])
+  MLP.fit(x_treino,y_treino)
+  Saida = MLP.predict(x_teste)
+  print("Acurácia  ",accuracy_score(y_teste, Saida))
 
 
 def media_valores(lista):
